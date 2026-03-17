@@ -26,7 +26,7 @@ public class PasswordMatchValidator implements ConstraintValidator<FieldMatch, O
 
             return Objects.equals(firstObj, secondObj);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 }

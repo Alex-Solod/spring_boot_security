@@ -1,4 +1,4 @@
-package mate.academy.spring_boot_security.dto;
+package mate.academy.spring_boot_security.dto.user;
 
 import lombok.Data;
 
