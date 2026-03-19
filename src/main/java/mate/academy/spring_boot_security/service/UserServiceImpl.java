@@ -5,7 +5,6 @@ import mate.academy.spring_boot_security.dto.user.UserRegistrationRequestDto;
 import mate.academy.spring_boot_security.dto.user.UserResponseDto;
 import mate.academy.spring_boot_security.exception.RegistrationException;
 import mate.academy.spring_boot_security.mapper.UserMapper;
-import mate.academy.spring_boot_security.model.User;
 import mate.academy.spring_boot_security.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +23,7 @@ public class UserServiceImpl implements UserService {
                     + " already exists");
         }
 
-        User user = userMapper.toModel(requestDto);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+        return userMapper.toDto(
+                userRepository.save(userMapper.toModel(requestDto)));
     }
 }
