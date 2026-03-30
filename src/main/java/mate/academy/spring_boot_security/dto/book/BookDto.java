@@ -1,7 +1,6 @@
 package mate.academy.spring_boot_security.dto.book;
 
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Data
