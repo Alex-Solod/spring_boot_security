@@ -1,6 +1,7 @@
 package mate.academy.spring_boot_security.dto.book;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ public class CreateBookRequestDto {
     @NotBlank
     private String isbn;
 
-    @NotBlank
+    @NotNull
     @Positive
     private BigDecimal price;
 
