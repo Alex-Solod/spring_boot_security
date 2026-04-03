@@ -1,8 +1,10 @@
 package mate.academy.spring_boot_security.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.dto.user.UserRegistrationRequestDto;
 import mate.academy.spring_boot_security.dto.user.UserResponseDto;
+import mate.academy.spring_boot_security.exception.EntityNotFoundException;
 import mate.academy.spring_boot_security.exception.RegistrationException;
 import mate.academy.spring_boot_security.mapper.UserMapper;
 import mate.academy.spring_boot_security.model.Role;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -33,8 +36,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
         Role userRole = roleRepository.findByName(Role.RoleName.USER)
-                .orElseThrow(() -> new RegistrationException(
-                        "Can't find role by name"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Role Not Found" + Role.RoleName.USER));
         user.setRoles(Set.of(userRole));
 
         return userMapper.toDto(userRepository.save(user));
