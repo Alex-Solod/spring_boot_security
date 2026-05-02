@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 public class CreateBookRequestDto {
@@ -23,4 +24,5 @@ public class CreateBookRequestDto {
 
     private String description;
     private String coverImage;
+    private Set<Long> categoryIds;
 }

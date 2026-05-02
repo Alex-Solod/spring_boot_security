@@ -27,7 +27,7 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "200", description = "User successfully registered"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    @PostMapping("/registration")
+    @PostMapping("/register")
     public UserResponseDto registration(
             @RequestBody @Valid UserRegistrationRequestDto requestDto) {
         return userService.register(requestDto);
