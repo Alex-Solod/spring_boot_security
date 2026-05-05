@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableMethodSecurity
 @Configuration
@@ -43,15 +42,18 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers(
                                         HttpMethod.POST,
-                                        "/auth/registration"
+                                        "/auth/register",
+                                        "/auth/login"
                                 )
                                 .permitAll()
-                                .requestMatchers("/auth/login")
+                                .requestMatchers("/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/h2-console/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
-                .httpBasic(withDefaults())
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

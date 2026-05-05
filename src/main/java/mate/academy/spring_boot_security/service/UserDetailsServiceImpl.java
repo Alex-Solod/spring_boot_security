@@ -2,6 +2,7 @@ package mate.academy.spring_boot_security.service;
 
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.repository.UserRepository;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

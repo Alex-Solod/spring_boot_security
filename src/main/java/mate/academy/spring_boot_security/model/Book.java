@@ -1,23 +1,21 @@
 package mate.academy.spring_boot_security.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
 @Data
-@Getter
-@Setter
+@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,4 +43,13 @@ public class Book {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "book_category",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Category> categories = new HashSet<>();
 }

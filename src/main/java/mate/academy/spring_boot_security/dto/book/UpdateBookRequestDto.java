@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 public class UpdateBookRequestDto {
@@ -24,4 +25,6 @@ public class UpdateBookRequestDto {
 
     @NotBlank
     private String isbn;
+
+    private Set<Long> categoryIds;
 }
