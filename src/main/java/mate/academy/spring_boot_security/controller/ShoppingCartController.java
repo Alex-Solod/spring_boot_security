@@ -49,7 +49,7 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update book quantity in shopping cart",
             description = "Update quantity of a book in the shopping cart")
-    public ShoppingCartDto updateBook(@PathVariable Long cartItemId,
+    public ShoppingCartDto updateBookQuantity(@PathVariable Long cartItemId,
                                       @RequestBody CartItemRequestDto cartDto) {
         return shoppingCartService.updateBook(cartItemId, cartDto);
     }
@@ -59,7 +59,7 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove book from shopping cart",
                 description = "Remove a book from the shopping cart")
-    public void deleteCartItem(@PathVariable Long cartItemId) {
-        shoppingCartService.deleteCartItem(cartItemId);
+    public void deleteCartItem(Long userId, @PathVariable Long cartItemId) {
+        shoppingCartService.deleteCartItemId(userId, cartItemId);
     }
 }
