@@ -31,12 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String token = getToken(request);
 
-        if(token != null && jwtUtil.isValidToken(token)) {
-            String username = jwtUtil.getUsername(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if(token != null) {
+            System.out.println("Token found: " + token);
+            boolean isValid = jwtUtil.isValidToken(token);
+            System.out.println("Token isValid: " + isValid);
+            if (isValid) {
+                String username = jwtUtil.getUsername(token);
+                System.out.println("Username: " + username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("Authorities: " + userDetails.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
         filterChain.doFilter(request, response);
     }
