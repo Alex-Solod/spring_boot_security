@@ -25,7 +25,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCartRepository.findByUserId(userId)
                 .map(shoppingCartMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Shopping cart for user with id: " + userId + " was not found"));
+                        "Shopping cart for user with id: "
+                                + userId + " was not found"));
     }
 
     @Override

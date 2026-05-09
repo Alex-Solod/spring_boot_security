@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.dto.cartItem.CartItemRequestDto;
 import mate.academy.spring_boot_security.dto.shoppingCart.ShoppingCartDto;
+import mate.academy.spring_boot_security.exception.EntityNotFoundException;
 import mate.academy.spring_boot_security.model.User;
 import mate.academy.spring_boot_security.service.ShoppingCartService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +35,9 @@ public class ShoppingCartController {
     public ShoppingCartDto addBook(Authentication authentication,
                                    @RequestBody CartItemRequestDto cartDto) {
         User user = (User) authentication.getPrincipal();
+        if (user == null) {
+            throw new EntityNotFoundException("User not authenticated");
+        }
         return shoppingCartService.addBook(user.getId(), cartDto);
     }
 
@@ -42,6 +47,9 @@ public class ShoppingCartController {
             description = "Retrieve current user's shopping cart")
     public ShoppingCartDto getShoppingCartById(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        if (user == null) {
+            throw new EntityNotFoundException("User not authenticated");
+        }
         return shoppingCartService.getCart(user.getId());
     }
 
