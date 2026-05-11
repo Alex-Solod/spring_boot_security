@@ -6,10 +6,7 @@ import mate.academy.spring_boot_security.dto.book.CreateBookRequestDto;
 import mate.academy.spring_boot_security.dto.book.UpdateBookRequestDto;
 import mate.academy.spring_boot_security.model.Book;
 import mate.academy.spring_boot_security.model.Category;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,5 +60,13 @@ public interface BookMapper {
                     .collect(Collectors.toSet());
             book.setCategories(categories);
         }
+    }
+
+    @Named("bookFromId")
+    default Book bookFromId(Long id) {
+        if (id == null) return null;
+        Book book = new Book();
+        book.setId(id);
+        return book;
     }
 }

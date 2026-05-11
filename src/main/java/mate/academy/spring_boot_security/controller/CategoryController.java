@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new category",
             description = "Create a new category")
     public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {

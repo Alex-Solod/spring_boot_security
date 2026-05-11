@@ -33,8 +33,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
-                        FieldError::getDefaultMessage,
-                        (existingValue, newValue) -> existingValue + ", " + newValue));
+                        fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "invalid",
+                        (existingValue, newValue) -> existingValue
+                                + ", " + newValue));
 
         body.put("errors", errors);
 
