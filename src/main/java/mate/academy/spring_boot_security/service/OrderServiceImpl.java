@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,31 +38,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto placeOrder(Long userId, CreateOrderRequestDto requestDto) {
         ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Shopping cart was not found for user with id:" + userId));
 
-        Order order = new Order();
-        order.setUser(cart.getUser());
-        order.setShippingAddress(requestDto.getShippingAddress());
-        order.setStatus(Order.Status.PENDING);
-        order.setOrderDate(LocalDateTime.now());
+        Order order = orderMapper.toModel(requestDto, cart);
 
-        Set<OrderItem> orderItems = cart.getCartItems().stream().map(cartItem -> {
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setBook(cartItem.getBook());
-            item.setQuantity(cartItem.getQuantity());
-            item.setPrice(cartItem.getBook().getPrice());
-            return item;
-        }).collect(Collectors.toSet());
+        Set<OrderItem> orderItems = cart.getCartItems().stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = orderItemMapper.toModel(cartItem);
+                    orderItem.setOrder(order);
+                    return orderItem;
+                }).collect(Collectors.toSet());
 
-        BigDecimal total = orderItems.stream().map(item -> item.getPrice()
-                        .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = calculateTotal(orderItems);
 
         order.setOrderItems(orderItems);
         order.setTotal(total);
 
         Order savedOrder = orderRepository.save(order);
+        orderItemRepository.saveAll(orderItems);
         cartItemRepository.deleteAll(cart.getCartItems());
 
         return orderMapper.toDto(savedOrder);
@@ -86,14 +80,27 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public Page<OrderItemDto> getOrderItems(Long userId, Long orderId, Pageable pageable) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new EntityNotFoundException("Order with " + orderId + " not found"));
+        if (!order.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You don't have permission to view this order");
+        }
         return orderItemRepository.findByOrderId(orderId, pageable).map(orderItemMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrderItemDto getOrderItemByOrderAndId(Long userId, Long orderId, Long orderItemId) {
-        OrderItem orderItem = orderItemRepository.findByIdAndOrderId(orderItemId, orderId).orElseThrow(
-                () -> new EntityNotFoundException("OrderItem with " + orderItemId + " not found"));
+        OrderItem orderItem = orderItemRepository.findByIdAndOrderIdAndOrderUserId(orderItemId, orderId, userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Order item with id " + orderItemId + " was not found for this order and user"));
+
         return orderItemMapper.toDto(orderItem);
+    }
+
+    private BigDecimal calculateTotal(Set<OrderItem> orderItems) {
+        return orderItems.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
