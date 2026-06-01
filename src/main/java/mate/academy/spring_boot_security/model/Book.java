@@ -2,9 +2,7 @@ package mate.academy.spring_boot_security.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import java.math.BigDecimal;
@@ -12,8 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "books")
-@Data
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 public class Book {
@@ -21,19 +20,15 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(nullable = false)
     private String title;
 
-    @NotNull
     @Column(nullable = false)
     private String author;
 
-    @NotNull
     @Column(unique = true, nullable = false)
     private String isbn;
 
-    @NotNull
     @Column(nullable = false)
     private BigDecimal price;
 
@@ -49,7 +44,5 @@ public class Book {
             name = "book_category",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Set<Category> categories = new HashSet<>();
 }
