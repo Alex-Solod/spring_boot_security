@@ -19,12 +19,12 @@ services:
     build: .
     ports:
       - "${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}"
-      - $DEBUG_PORT:$DEBUG_PORT
+      - "${DEBUG_PORT}:${DEBUG_PORT}"
     depends_on:
       mysqldb:
         condition: service_healthy
     environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${DEBUG_PORT}"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:${MYSQLDB_DOCKER_PORT}/${MYSQLDB_DATABASE}
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQLDB_ROOT_PASSWORD}
