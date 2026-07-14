@@ -6,8 +6,6 @@ import mate.academy.spring_boot_security.dto.book.CreateBookRequestDto;
 import mate.academy.spring_boot_security.dto.book.UpdateBookRequestDto;
 import mate.academy.spring_boot_security.model.Book;
 import mate.academy.spring_boot_security.repository.BookRepository;
-import mate.academy.spring_boot_security.repository.CategoryRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,9 +18,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.math.BigDecimal;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -46,8 +45,6 @@ class BookControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -80,8 +77,8 @@ class BookControllerTest {
 
         //Then
         String content = result.getResponse().getContentAsString();
-        Assertions.assertNotNull(content);
-        Assertions.assertFalse(content.isEmpty());
+        assertNotNull(content);
+        assertFalse(content.isEmpty());
     }
 
     @Test
@@ -120,8 +117,8 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(),
                 BookDto.class);
 
-        Assertions.assertNotNull(actual);
-        Assertions.assertNotNull(actual.getId());
+        assertNotNull(actual);
+        assertEquals(BOOK_TITLE, actual.getTitle());
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getAuthor(), actual.getAuthor());
         assertEquals(expected.getIsbn(), actual.getIsbn());
@@ -151,7 +148,7 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(),
                 BookDto.class);
 
-        Assertions.assertNotNull(actual);
+        assertNotNull(actual);
         assertEquals(BOOK_ID, actual.getId());
         assertEquals(BOOK_TITLE, actual.getTitle());
         assertEquals(BOOK_AUTHOR, actual.getAuthor());
@@ -197,7 +194,7 @@ class BookControllerTest {
         BookDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
+        assertNotNull(actual);
         assertEquals(BOOK_ID, actual.getId());
 
         Book book = bookRepository.findById(BOOK_ID).orElseThrow();
