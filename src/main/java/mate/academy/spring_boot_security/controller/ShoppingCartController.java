@@ -1,7 +1,9 @@
 package mate.academy.spring_boot_security.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.dto.cartItem.CartItemRequestDto;
 import mate.academy.spring_boot_security.dto.shoppingCart.ShoppingCartDto;
@@ -9,7 +11,6 @@ import mate.academy.spring_boot_security.exception.EntityNotFoundException;
 import mate.academy.spring_boot_security.model.User;
 import mate.academy.spring_boot_security.service.ShoppingCartService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,8 +33,8 @@ public class ShoppingCartController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Add book to shopping cart")
-    public ShoppingCartDto addBook(Authentication authentication,
-                                   @RequestBody CartItemRequestDto cartDto) {
+    public ShoppingCartDto addBook(@Parameter(hidden = true) Authentication authentication,
+                                   @RequestBody @Valid CartItemRequestDto cartDto) {
         User user = (User) authentication.getPrincipal();
         if (user == null) {
             throw new EntityNotFoundException("User not authenticated");
@@ -45,7 +46,7 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get user shopping cart",
             description = "Retrieve current user's shopping cart")
-    public ShoppingCartDto getShoppingCartById(Authentication authentication) {
+    public ShoppingCartDto getShoppingCartById(@Parameter(hidden = true) Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if (user == null) {
             throw new EntityNotFoundException("User not authenticated");
@@ -57,9 +58,11 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update book quantity in shopping cart",
             description = "Update quantity of a book in the shopping cart")
-    public ShoppingCartDto updateBookQuantity(@PathVariable Long cartItemId,
-                                      @RequestBody CartItemRequestDto cartDto) {
-        return shoppingCartService.updateBook(cartItemId, cartDto);
+    public ShoppingCartDto updateBookQuantity(@Parameter(hidden = true) Authentication authentication,
+                                             @PathVariable Long cartItemId,
+                                             @RequestBody @Valid CartItemRequestDto cartDto) {
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.updateBook(user.getId(), cartItemId, cartDto);
     }
 
     @DeleteMapping("/items/{cartItemId}")
@@ -67,7 +70,9 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove book from shopping cart",
                 description = "Remove a book from the shopping cart")
-    public void deleteCartItem(Long userId, @PathVariable Long cartItemId) {
-        shoppingCartService.deleteCartItemId(userId, cartItemId);
+    public void deleteCartItem(@Parameter(hidden = true) Authentication authentication,
+                               @PathVariable Long cartItemId) {
+        User user = (User) authentication.getPrincipal();
+        shoppingCartService.deleteCartItemId(user.getId(), cartItemId);
     }
 }

@@ -8,6 +8,7 @@ import mate.academy.spring_boot_security.dto.book.BookDto;
 import mate.academy.spring_boot_security.dto.book.CreateBookRequestDto;
 import mate.academy.spring_boot_security.dto.book.UpdateBookRequestDto;
 import mate.academy.spring_boot_security.service.BookService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class BookController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
     @Operation(summary = "Get all books", description = "Get list of all available books")
-    public Page<BookDto> getAllBooks(Pageable pageable) {
+    public Page<BookDto> getAllBooks(@ParameterObject Pageable pageable) {
         return bookService.getAllBooks(pageable);
     }
 
