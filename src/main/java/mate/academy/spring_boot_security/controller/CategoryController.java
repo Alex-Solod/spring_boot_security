@@ -2,10 +2,12 @@ package mate.academy.spring_boot_security.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.dto.book.BookDtoWithoutCategoryIds;
 import mate.academy.spring_boot_security.dto.category.CategoryDto;
 import mate.academy.spring_boot_security.service.CategoryService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,15 +34,15 @@ public class CategoryController {
     @Operation(summary = "Create a new category",
             description = "Create a new category")
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto createCategory(@RequestBody @Valid CategoryDto categoryDto) {
         return categoryService.save(categoryDto);
-    };
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping
     @Operation(summary = "Get all category",
             description = "Get list of all categories")
-    public Page<CategoryDto> getAll(Pageable pageable) {
+    public Page<CategoryDto> getAll(@ParameterObject Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
@@ -57,7 +59,7 @@ public class CategoryController {
     @Operation(summary = "Update book category",
             description = "Update existing book category by id")
     public CategoryDto updateCategory(@PathVariable Long id,
-                                      @RequestBody CategoryDto categoryDto) {
+                                      @RequestBody @Valid CategoryDto categoryDto) {
         return categoryService.updateCategory(id, categoryDto);
     }
 
@@ -75,7 +77,7 @@ public class CategoryController {
     @Operation(summary = "Get book by category id",
             description = "Retrieve a book by category id")
     public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(
-            @PathVariable Long id, Pageable pageable) {
+            @PathVariable Long id, @ParameterObject Pageable pageable) {
         return categoryService.getBooksByCategoryId(id, pageable);
     }
 }

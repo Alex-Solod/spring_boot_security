@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mysqldb:
     image: mysql:8
@@ -16,6 +14,8 @@ services:
       retries: 3
 
   app:
+    profiles:
+      - deploy
     build: .
     ports:
       - "${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}"

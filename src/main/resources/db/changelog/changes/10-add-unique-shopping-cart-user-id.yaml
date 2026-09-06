@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-unique-shopping-cart-user-id
+      author: alex
+      changes:
+        - addUniqueConstraint:
+            tableName: shopping_cart
+            columnNames: user_id
+            constraintName: uk_shopping_cart_user_id
+

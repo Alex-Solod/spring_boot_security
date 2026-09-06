@@ -4,7 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.spring_boot_security.dto.cartItem.CartItemRequestDto;
 import mate.academy.spring_boot_security.dto.shoppingCart.ShoppingCartDto;
-import mate.academy.spring_boot_security.exception.CartItemDeletionException;
 import mate.academy.spring_boot_security.exception.EntityNotFoundException;
 import mate.academy.spring_boot_security.mapper.CartItemMapper;
 import mate.academy.spring_boot_security.mapper.ShoppingCartMapper;
@@ -12,6 +11,7 @@ import mate.academy.spring_boot_security.model.CartItem;
 import mate.academy.spring_boot_security.model.ShoppingCart;
 import mate.academy.spring_boot_security.repository.CartItemRepository;
 import mate.academy.spring_boot_security.repository.ShoppingCartRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,8 +45,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Transactional
     @Override
-    public ShoppingCartDto updateBook(Long cartItemId, CartItemRequestDto cartDto) {
+    public ShoppingCartDto updateBook(Long userId, Long cartItemId, CartItemRequestDto cartDto) {
         CartItem cartItem = getCartItemById(cartItemId);
+        checkCartItemOwner(cartItem, userId);
+
         cartItemMapper.updateCartFromDto(cartDto, cartItem);
         cartItemRepository.save(cartItem);
 
@@ -57,15 +59,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void deleteCartItemId(Long userId, Long cartItemId) {
         CartItem cartItem = getCartItemById(cartItemId);
+        checkCartItemOwner(cartItem, userId);
 
+        cartItemRepository.delete(cartItem);
+    }
+
+    private void checkCartItemOwner(CartItem cartItem, Long userId) {
         Long ownerId = cartItem.getShoppingCart()
                 .getUser()
                 .getId();
+
         if (!ownerId.equals(userId)) {
-            throw new CartItemDeletionException("User with id " + ownerId
-                    + "is not allowed to delete cartItem with id " + cartItemId);
+            throw new AccessDeniedException(
+                    "You don't have permission to modify this cart item");
         }
-        cartItemRepository.delete(cartItem);
     }
 
     private CartItem getCartItemById(Long cartItemId) {

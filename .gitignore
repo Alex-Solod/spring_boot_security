@@ -34,6 +34,6 @@ build/
 
 ### H2 Database files ###
 *.db
-db/
+/db/
 
 .env
